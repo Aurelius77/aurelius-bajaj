@@ -1,16 +1,8 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 
 from app.elexon import ElexonDataError, load_january_2026_analysis
 
 app = FastAPI(title="UK Wind Forecast Analysis API")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_methods=["GET"],
-    allow_headers=["*"],
-)
 
 
 @app.get("/api/health")

@@ -15,9 +15,9 @@ docker compose up --build
 Then open:
 
 - Dashboard: <http://localhost:3000>
-- API health: <http://localhost:8000/api/health>
-- January analysis API: <http://localhost:8000/api/wind/analysis>
-- Interactive API docs: <http://localhost:8000/docs>
+- Public app proxy: <http://localhost:3000/api/wind/analysis>
+- Backend health (local Docker only): <http://localhost:8000/api/health>
+- Interactive backend docs (local Docker only): <http://localhost:8000/docs>
 
 The dashboard fetches the January 2026 FUELHH and WINDFOR records from Elexon through the Python API when it loads. Use **Refresh data** to request them again. The 11:00 UK-time forecast cutoff on the day before delivery is a documented pilot assumption.
 

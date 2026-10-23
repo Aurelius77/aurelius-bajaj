@@ -33,7 +33,6 @@ type Analysis = {
   periods: Period[]
 }
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
 const number = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 0 })
 const decimal = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 1 })
 
@@ -111,7 +110,7 @@ export default function Dashboard() {
     const controller = new AbortController()
     setIsLoading(true)
     setError('')
-    fetch(`${apiBase}/api/wind/analysis`, { signal: controller.signal, cache: 'no-store' })
+    fetch('/api/wind/analysis', { signal: controller.signal, cache: 'no-store' })
       .then(async (response) => {
         if (!response.ok) {
           const body = await response.json().catch(() => null)
