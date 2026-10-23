@@ -2,6 +2,10 @@
 
 A pilot dashboard for reviewing Elexon UK wind generation forecasts against actual generation for January 2026.
 
+## Live link
+
+https://aurelius-bajaj.vercel.app/
+
 ## Run with Docker
 
 Prerequisite: Docker Desktop (or Docker Engine with the Compose plugin).
@@ -66,6 +70,10 @@ The frontend runs at <http://localhost:3000>; the backend runs at <http://localh
 - WINDFOR is hourly in the inspected sample; FUELHH is half-hourly. The API averages the two actual half-hours in each hour before comparing values.
 - Error is `forecast - actual`. The API reports MAE, signed bias, WAPE, and matched-period coverage.
 - The supplied datasets do not contain demand, so this app does not calculate a complete amount of power to procure.
+
+## LIVE LINK
+
+https://aurelius-bajaj.vercel.app/
 
 ## AI tools
 
