@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Northstar Wind Desk
 
-## Getting Started
+A pilot dashboard for reviewing Elexon UK wind generation forecasts against actual generation for January 2026.
 
-First, run the development server:
+## Run with Docker
+
+Prerequisite: Docker Desktop (or Docker Engine with the Compose plugin).
+
+From the repository root, run:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose up --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Dashboard: <http://localhost:3000>
+- API health: <http://localhost:8000/api/health>
+- January analysis API: <http://localhost:8000/api/wind/analysis>
+- Interactive API docs: <http://localhost:8000/docs>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The dashboard fetches the January 2026 FUELHH and WINDFOR records from Elexon through the Python API when it loads. Use **Refresh data** to request them again. The 11:00 UK-time forecast cutoff on the day before delivery is a documented pilot assumption.
 
-## Learn More
+Stop the containers with `Ctrl+C`, or run `docker compose down` in another terminal.
 
-To learn more about Next.js, take a look at the following resources:
+To rebuild after changing application code, run `docker compose up --build` again.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Run without Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Frontend
 
-## Deploy on Vercel
+```bash
+npm ci
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Backend
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+In a second terminal:
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+The frontend runs at <http://localhost:3000>; the backend runs at <http://localhost:8000>.
+
+## Project structure
+
+- `app/` — Next.js pages, dashboard UI, and visual styles.
+- `backend/app/main.py` — FastAPI application and HTTP routes.
+- `backend/app/elexon.py` — Elexon data retrieval, forecast selection, matching, and accuracy calculations.
+- `backend/scripts/inspect_elexon_sample.py` — small script for inspecting one delivery day.
+- `backend/requirements.txt` — Python dependencies.
+- `Dockerfile` — production build for the Next.js frontend.
+- `backend/Dockerfile` — Python API container.
+- `docker-compose.yml` — starts the frontend and API together.
+
+## Analysis notes
+
+- Actual generation comes from FUELHH records filtered to `fuelType=WIND`.
+- Forecasts come from WINDFOR records.
+- WINDFOR is hourly in the inspected sample; FUELHH is half-hourly. The API averages the two actual half-hours in each hour before comparing values.
+- Error is `forecast - actual`. The API reports MAE, signed bias, WAPE, and matched-period coverage.
+- The supplied datasets do not contain demand, so this app does not calculate a complete amount of power to procure.
+
+## AI tools
+
+OpenAI Codex was used to help with implementation and documentation.
